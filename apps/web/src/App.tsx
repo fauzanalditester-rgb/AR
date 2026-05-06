@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-interface Product {
+/* interface Product {
   id: number;
   emoji: string;
   name: string;
@@ -9,15 +9,15 @@ interface Product {
   price: string;
   tag: string;
   color: string;
-}
+} */
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-const PRODUCTS: Product[] = [
+/* const PRODUCTS: Product[] = [
   { id: 1, emoji: "🧋", name: "Teh Poci Cheese Cream", desc: "Teh premium dengan topping keju creamy yang lembut dan gurih", price: "Rp 18.000", tag: "BEST SELLER", color: "#F5C518" },
   { id: 2, emoji: "🍵", name: "Brown Sugar Series", desc: "Manis karamel brown sugar asli dengan teh pilihan terbaik", price: "Rp 16.000", tag: "TERLARIS", color: "#C97B2A" },
   { id: 3, emoji: "🍋", name: "Lemon Fresh", desc: "Segar menyegarkan dengan perasan lemon asli dan teh hijau", price: "Rp 14.000", tag: "BARU", color: "#7FC441" },
   { id: 4, emoji: "🍨", name: "Float Ice Cream", desc: "Kombinasi es krim vanilla lembut di atas teh dingin segar", price: "Rp 20.000", tag: "PREMIUM", color: "#E8A4C8" },
-];
+]; */
 
 // ─── AR Camera Component (Mind-AR Implementation) ───────────────────────────
 declare global {
@@ -34,49 +34,20 @@ declare global {
 }
 
 function ARCamera() {
-  const sceneRef = useRef<any>(null);
   const [started, setStarted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const startAR = () => {
-    setStarted(true);
-  };
-
-  useEffect(() => {
-    let arSystem: any = null;
-    if (started && sceneRef.current) {
-      const sceneEl = sceneRef.current;
-      
-      const handleRenderStart = () => {
-        arSystem = sceneEl.systems["mindar-image-system"];
-        if (arSystem && !arSystem.started) {
-          arSystem.start();
-        }
-      };
-
-      sceneEl.addEventListener("renderstart", handleRenderStart);
-
-      return () => {
-        sceneEl.removeEventListener("renderstart", handleRenderStart);
-        if (arSystem && arSystem.started) {
-          arSystem.stop();
-        }
-      };
-    }
-  }, [started]);
-
+  // Versi Tanpa Kamera (Pure Visual)
   if (!started) {
     return (
-      <div className="cam-wrap">
-        <div className="cam-error">
-          <div className="cam-error-icon">📷</div>
-          <div className="sec-title bebas" style={{ fontSize: 28 }}>AKTIFKAN AR</div>
-          <div className="cam-error-txt">
-            Tekan tombol di bawah untuk mengaktifkan Image Tracking AR (Mind-AR). 
-            Arahkan kamera ke kartu nama/logo untuk memunculkan objek 3D.
-          </div>
-          <button className="btn-primary" style={{ marginTop: 16 }} onClick={startAR}>
-            MULAI SCANNER
+      <div className="cam-wrap" style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#100500" }}>
+        <div className="cam-error" style={{ textAlign: "center", padding: "20px" }}>
+          <div className="cam-error-icon" style={{ fontSize: "60px" }}>🍵</div>
+          <div className="sec-title bebas" style={{ fontSize: 42, color: "#F5C518" }}>TEH POCI EXPERIENCE</div>
+          <p style={{ color: "#fff", opacity: 0.8, maxWidth: "300px", margin: "10px auto 20px" }}>
+            Klik tombol di bawah untuk melihat visual premium Teh Poci.
+          </p>
+          <button className="btn-primary" style={{ padding: "15px 40px", fontSize: "18px" }} onClick={() => setStarted(true)}>
+            LIHAT VISUAL
           </button>
         </div>
       </div>
@@ -84,56 +55,95 @@ function ARCamera() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-      <div className="cam-wrap" style={{ position: "relative" }}>
-        {/* A-Frame Scene Integrated with Mind-AR */}
-        <a-scene 
-          ref={sceneRef}
-          mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;"
-          color-space="sRGB" 
-          embedded
-          renderer="colorManagement: true, physicallyCorrectLights" 
-          vr-mode-ui="enabled: false" 
-          device-orientation-permission-ui="enabled: false"
-          style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
-        >
-          <a-assets>
-            <a-asset-item id="cupModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softbar/scene.gltf"></a-asset-item>
-          </a-assets>
+    <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 9999, background: "#100500" }}>
+      {/* A-Frame Scene - Pure Visual Mode (No Camera) */}
+      <a-scene 
+        color-space="sRGB" 
+        renderer="colorManagement: true, physicallyCorrectLights" 
+        vr-mode-ui="enabled: false" 
+        device-orientation-permission-ui="enabled: false"
+        style={{ width: "100%", height: "100%" }}
+      >
+        <a-assets>
+          <img id="pociAsset" src="/poci_splash.png" />
+          <img id="flyerAsset" src="/flyer.jpg" />
+        </a-assets>
 
-          <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        {/* Kamera Statis */}
+        <a-camera position="0 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
 
-          <a-entity mindar-image-target="targetIndex: 0">
-            <a-gltf-model 
-              rotation="0 0 0" 
-              position="0 0 0.1" 
-              scale="0.005 0.005 0.005" 
-              src="#cupModel"
-              animation="property: rotation; to: 0 360 0; dur: 5000; easing: linear; loop: true"
-            ></a-gltf-model>
-          </a-entity>
-        </a-scene>
+        {/* CONTAINER UTAMA */}
+        <a-entity position="0 0 -2.5" scale="1.3 1.3 1.3">
+           
+           {/* BACKGROUND FLYER */}
+           <a-image 
+             src="#flyerAsset" 
+             width="4.2" 
+             height="5.8" 
+             position="0 0 -0.5"
+             shader="flat"
+           ></a-image>
 
-        {/* Custom Overlay (Optional UI) */}
-        <div className="cam-overlay">
-          <div className="cam-status">
-            <div className="rec-dot" />
-            <span className="status-txt">MIND-AR ACTIVE</span>
-          </div>
-          
-          <div className="scan-frame">
-            <div className="sf-corner tl" />
-            <div className="sf-corner tr" />
-            <div className="sf-corner bl" />
-            <div className="sf-corner br" />
-            <div className="scan-line-moving" />
-          </div>
-        </div>
-      </div>
+           {/* GELAS TEH POCI UTAMA */}
+           <a-entity position="0 -0.4 0.2">
+              <a-image 
+                src="#pociAsset" 
+                width="2.2" 
+                height="2.6" 
+                position="0 0.2 0"
+                animation="property: position; to: 0 0.3 0; dur: 2000; dir: alternate; loop: true; easing: easeInOutSine"
+              ></a-image>
 
-      <p style={{ marginTop: 16, fontSize: 13, color: "rgba(255,248,237,.4)", textAlign: "center", maxWidth: 340 }}>
-        Arahkan kamera ke <a href="https://github.com/hiukim/mind-ar-js/blob/master/examples/image-tracking/assets/card-example/card.png" target="_blank" style={{ color: "var(--yellow)" }}>Gambar Target ini</a> untuk melihat model 3D.
-      </p>
+              {/* Secondary Splash Layer */}
+              <a-image 
+                src="#pociAsset" 
+                width="2.3" 
+                height="2.7" 
+                position="0 0.2 0.05"
+                opacity="0.3"
+                animation="property: scale; from: 1 1 1; to: 1.05 1.05 1.05; dur: 1500; dir: alternate; loop: true; easing: easeInOutQuad"
+              ></a-image>
+
+              {/* Floating Ice Cubes */}
+              {[
+                { pos: "-0.5 -0.3 0.3", rot: "45 45 0", scale: "0.2" },
+                { pos: "0.4 -0.6 0.2", rot: "10 20 30", scale: "0.15" },
+                { pos: "-0.2 -0.8 0.4", rot: "80 10 0", scale: "0.12" },
+                { pos: "0.5 -0.1 0.1", rot: "0 45 45", scale: "0.18" },
+              ].map((ice, i) => (
+                <a-box 
+                  key={i}
+                  position={ice.pos} 
+                  rotation={ice.rot} 
+                  width={ice.scale} 
+                  height={ice.scale} 
+                  depth={ice.scale} 
+                  color="#E0F7FA" 
+                  opacity="0.7"
+                  animation={`property: position; to: ${ice.pos.split(' ')[0]} ${parseFloat(ice.pos.split(' ')[1]) + 0.1} ${ice.pos.split(' ')[2]}; dur: ${2000 + i * 500}; dir: alternate; loop: true; easing: easeInOutSine`}
+                  animation__rot={`property: rotation; to: ${parseFloat(ice.rot.split(' ')[0]) + 360} ${ice.rot.split(' ')[1]} ${ice.rot.split(' ')[2]}; dur: ${5000 + i * 1000}; loop: true; easing: linear`}
+                ></a-box>
+              ))}
+           </a-entity>
+
+           {/* Dynamic Light */}
+           <a-light type="point" intensity="1.5" distance="5" color="#F5C518" position="0 1 2"></a-light>
+        </a-entity>
+      </a-scene>
+
+      {/* Tombol Kembali */}
+      <button 
+        onClick={() => setStarted(false)} 
+        style={{ 
+          position: "absolute", top: "20px", right: "20px", zIndex: 10000,
+          background: "rgba(215, 43, 43, 0.9)", color: "#fff", border: "none",
+          padding: "12px 25px", borderRadius: "30px", cursor: "pointer",
+          fontFamily: "var(--font-bebas)", fontSize: "16px", fontWeight: "bold",
+          boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
+        }}
+      >
+        KEMBALI ✕
+      </button>
     </div>
   );
 }

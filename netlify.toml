@@ -1,0 +1,16 @@
+[build]
+  # The directory to run the build command in
+  base = "/"
+  # The command to run to build the project
+  command = "npm run build"
+  # The directory that Netlify will serve (relative to the base directory)
+  publish = "apps/web/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--version"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
