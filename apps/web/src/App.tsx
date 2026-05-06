@@ -56,7 +56,7 @@ function ARCamera() {
 
   return (
     <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 9999, background: "#100500" }}>
-      {/* A-Frame Scene - Pure Visual Mode (No Camera) */}
+      {/* A-Frame Scene - Optimized Pure Visual Mode */}
       <a-scene 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights" 
@@ -65,17 +65,15 @@ function ARCamera() {
         style={{ width: "100%", height: "100%" }}
       >
         <a-assets>
-          <img id="pociAsset" src="/poci_splash.png" />
-          <img id="flyerAsset" src="/flyer.jpg" />
+          {/* Menggunakan jalur relatif agar aman di hosting mana pun */}
+          <img id="pociAsset" src="./poci_splash.png" alt="Teh Poci Splash" />
+          <img id="flyerAsset" src="./flyer.jpg" alt="Teh Poci Flyer" />
         </a-assets>
 
-        {/* Kamera Statis */}
         <a-camera position="0 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-camera>
 
-        {/* CONTAINER UTAMA */}
         <a-entity position="0 0 -2.5" scale="1.3 1.3 1.3">
            
-           {/* BACKGROUND FLYER */}
            <a-image 
              src="#flyerAsset" 
              width="4.2" 
@@ -84,7 +82,6 @@ function ARCamera() {
              shader="flat"
            ></a-image>
 
-           {/* GELAS TEH POCI UTAMA */}
            <a-entity position="0 -0.4 0.2">
               <a-image 
                 src="#pociAsset" 
@@ -94,7 +91,6 @@ function ARCamera() {
                 animation="property: position; to: 0 0.3 0; dur: 2000; dir: alternate; loop: true; easing: easeInOutSine"
               ></a-image>
 
-              {/* Secondary Splash Layer */}
               <a-image 
                 src="#pociAsset" 
                 width="2.3" 
@@ -104,12 +100,12 @@ function ARCamera() {
                 animation="property: scale; from: 1 1 1; to: 1.05 1.05 1.05; dur: 1500; dir: alternate; loop: true; easing: easeInOutQuad"
               ></a-image>
 
-              {/* Floating Ice Cubes */}
+              {/* Ice Cubes */}
               {[
-                { pos: "-0.5 -0.3 0.3", rot: "45 45 0", scale: "0.2" },
-                { pos: "0.4 -0.6 0.2", rot: "10 20 30", scale: "0.15" },
-                { pos: "-0.2 -0.8 0.4", rot: "80 10 0", scale: "0.12" },
-                { pos: "0.5 -0.1 0.1", rot: "0 45 45", scale: "0.18" },
+                { pos: "-0.5 -0.3 0.3", rot: "45 45 0", scale: 0.2 },
+                { pos: "0.4 -0.6 0.2", rot: "10 20 30", scale: 0.15 },
+                { pos: "-0.2 -0.8 0.4", rot: "80 10 0", scale: 0.12 },
+                { pos: "0.5 -0.1 0.1", rot: "0 45 45", scale: 0.18 },
               ].map((ice, i) => (
                 <a-box 
                   key={i}
@@ -126,12 +122,10 @@ function ARCamera() {
               ))}
            </a-entity>
 
-           {/* Dynamic Light */}
            <a-light type="point" intensity="1.5" distance="5" color="#F5C518" position="0 1 2"></a-light>
         </a-entity>
       </a-scene>
 
-      {/* Tombol Kembali */}
       <button 
         onClick={() => setStarted(false)} 
         style={{ 
